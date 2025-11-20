@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>标书速读 - BidSpeed</title>
+    <!-- Element Plus CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-plus@2.4.4/dist/index.css">
+    <!-- Element Plus Icons -->
+    <link rel="stylesheet" href="https://unpkg.com/@element-plus/icons-vue@2.1.0/dist/index.css">
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3.3.11/dist/vue.global.js"></script>
+    <!-- Element Plus -->
+    <script src="https://unpkg.com/element-plus@2.4.4"></script>
+    <!-- Element Plus Icons -->
+    <script src="https://unpkg.com/@element-plus/icons-vue@2.1.0/dist/index.iife.js"></script>
+    <!-- Axios -->
+    <script src="https://unpkg.com/axios@1.6.2/dist/axios.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        /* 顶部导航栏 */
+        .navbar {
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 12px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .nav-logo {
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-item {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+        
+        /* 主内容区 */
+        #app {
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+        
+        .hero-section {
+            text-align: center;
+            padding: 80px 20px;
+            color: white;
+        }
+        
+        .hero-title {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #fff, #f0f0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .hero-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .hero-btn-primary {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        }
+        
+        .hero-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+        }
+        
+        .hero-btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .hero-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        /* 主要内容容器 */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* 功能卡片 */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .feature-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+        
+        .feature-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .feature-content {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        /* 上传区域 */
+        .upload-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 30px;
+        }
+        
+        .upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 60px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #fafafa;
+        }
+        
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #f8faff;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: #9ca3af;
+            margin-bottom: 16px;
+        }
+        
+        .upload-text {
+            font-size: 16px;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        
+        .upload-hint {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+        
+        /* 结果展示 */
+        .result-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 30px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .hero-title {
+                font-size: 36px;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        /* 按钮样式 */
+        .action-button {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.3);
+        }
+        
+        .action-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- 导航栏 -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="#" class="nav-logo">标书速读 · BidSpeed</a>
+                <div class="nav-menu">
+                    <a href="#" class="nav-item" :class="{ active: currentPage === 'home' }" @click.prevent="goToPage('home')">
+                        🏠 首页
+                    </a>
+                    <a href="#" class="nav-item" :class="{ active: currentPage === 'upload' }" @click.prevent="goToPage('upload')">
+                        📤 上传分析
+                    </a>
+                    <a href="#" class="nav-item" :class="{ active: currentPage === 'solution' }" @click.prevent="goToPage('solution')">
+                        📄 方案库
+                    </a>
+                    <a href="#" class="nav-item" :class="{ active: currentPage === 'supplier' }" @click.prevent="goToPage('supplier')">
+                        🔍 供应商
+                    </a>
+                    <a href="#" class="nav-item" :class="{ active: currentPage === 'support' }" @click.prevent="goToPage('support')">
+                        💬 技术支持
+                    </a>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Hero 区域 -->
+        <section class="hero-section fade-in-up">
+            <h1 class="hero-title">标书速读 · BidSpeed</h1>
+            <p class="hero-subtitle">
+                上传标书PDF，一键完成解读、方案生成、供应商寻源<br>
+                30秒生成技术方案·供应商三维图谱，让标书从"人海苦页"变成"一图一盘"
+            </p>
+            <div class="hero-buttons">
+                <button class="hero-btn hero-btn-primary" @click="startUsing">
+                    📤 开始使用
+                </button>
+                <button class="hero-btn hero-btn-secondary" @click="watchDemo">
+                    ▶️ 查看演示
+                </button>
+            </div>
+        </section>
+        
+        <!-- 主内容区 -->
+        <div class="main-container">
+            <!-- 上传区域 -->
+            <div class="upload-section fade-in-up" v-show="showUpload">
+                <h2 style="margin-bottom: 20px; color: #1f2937; font-weight: 600;">📄 上传标书文档</h2>
+                
+                <el-upload
+                    class="upload-area"
+                    drag
+                    :action="uploadUrl"
+                    :on-success="handleUploadSuccess"
+                    :on-error="handleUploadError"
+                    :before-upload="beforeUpload"
+                    :show-file-list="false">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">点击或拖拽文件到此处上传</div>
+                    <div class="upload-hint">支持 PDF、Word、TXT 格式，文件大小不超过 16MB</div>
+                </el-upload>
+                
+                <div v-if="uploadedFile" style="margin-top: 20px;">
+                    <el-alert type="success" :closable="false" style="font-size: 16px;">
+                        <template #title>
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <div>
+                                    <strong style="font-size: 18px;">✅ 已上传文件：</strong>
+                                    <span style="color: #409eff; font-weight: 600; font-size: 16px;">{{ uploadedFile.filename }}</span>
+                                </div>
+                                <div style="color: #67c23a; font-size: 14px;">
+                                    上传成功
+                                </div>
+                            </div>
+                        </template>
+                    </el-alert>
+                </div>
+            </div>
+            
+            <!-- 功能卡片 -->
+            <div class="feature-grid" v-show="!showUpload || !uploadedFile">
+                <div class="feature-card fade-in-up">
+                    <div class="feature-header">
+                        <div class="feature-icon">🔍</div>
+                        <h3 class="feature-title">智能解读分析</h3>
+                    </div>
+                    <div class="feature-content">
+                        AI自动提取标书中的技术规格、评分细则、合同条款等关键信息，生成结构化清单和分值权重分析。
+                    </div>
+                </div>
+                
+                <div class="feature-card fade-in-up">
+                    <div class="feature-header">
+                        <div class="feature-icon">⚙️</div>
+                        <h3 class="feature-title">方案自动生成</h3>
+                    </div>
+                    <div class="feature-content">
+                        基于标书要求自动匹配技术方案，生成系统架构图、实施计划和技术偏离表。
+                    </div>
+                </div>
+                
+                <div class="feature-card fade-in-up">
+                    <div class="feature-header">
+                        <div class="feature-icon">🏢</div>
+                        <h3 class="feature-title">供应商寻源</h3>
+                    </div>
+                    <div class="feature-content">
+                        全网智能搜索符合要求的供应商，显示官网、联系方式等信息，自动评估资质并排名。
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 分析结果 -->
+            <div v-if="analysisResult" class="result-card fade-in-up">
+                <h2 style="margin-bottom: 20px; color: #1f2937; font-weight: 600;">📊 解读结果</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">{{ analysisResult.metadata.total_words }}</div>
+                        <div class="stat-label">总字数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ analysisResult.metadata.key_points_count }}</div>
+                        <div class="stat-label">关键要点</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ analysisResult.tech_specifications.length }}</div>
+                        <div class="stat-label">技术规格</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ analysisResult.scoring_rules.length }}</div>
+                        <div class="stat-label">评分项</div>
+                    </div>
+                </div>
+                
+                <el-tabs v-model="activeTab">
+                    <el-tab-pane label="🤖 AI智能总结" name="summary">
+                        <el-descriptions :column="1" border>
+                            <el-descriptions-item label="核心需求">
+                                {{ analysisResult.ai_summary.核心需求总结 }}
+                            </el-descriptions-item>
+                            <el-descriptions-item label="关键技术要点">
+                                <ul>
+                                    <li v-for="point in analysisResult.ai_summary.关键技术要点" :key="point">
+                                        {{ point }}
+                                    </li>
+                                </ul>
+                            </el-descriptions-item>
+                            <el-descriptions-item label="重要时间节点">
+                                <el-tag v-for="(date, event) in analysisResult.ai_summary.重要时间节点" 
+                                        :key="event" style="margin-right: 10px;">
+                                    {{ event }}: {{ date }}
+                                </el-tag>
+                            </el-descriptions-item>
+                        </el-descriptions>
+                    </el-tab-pane>
+                    
+                    <el-tab-pane label="📋 技术条款清单" name="checklist">
+                        <el-table :data="analysisResult.tech_checklist" stripe>
+                            <el-table-column prop="item" label="条款内容" min-width="300"></el-table-column>
+                            <el-table-column prop="page" label="页码" width="80"></el-table-column>
+                            <el-table-column prop="score" label="分值" width="80"></el-table-column>
+                            <el-table-column prop="priority" label="优先级" width="100">
+                                <template #default="scope">
+                                    <el-tag :type="scope.row.priority === 'high' ? 'danger' : 
+                                                   scope.row.priority === 'medium' ? 'warning' : 'info'">
+                                        {{ scope.row.priority === 'high' ? '高' : 
+                                           scope.row.priority === 'medium' ? '中' : '低' }}
+                                    </el-tag>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-tab-pane>
+                </el-tabs>
+                
+                <div style="margin-top: 30px; text-align: center;">
+                    <button class="action-button" :disabled="generatingSolution" @click="generateSolution">
+                        <span v-if="generatingSolution">⏳</span>
+                        <span v-else>⚙️</span>
+                        {{ generatingSolution ? '生成中...' : '生成技术方案' }}
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 技术方案结果 -->
+            <div v-if="solutionResult" class="result-card fade-in-up">
+                <h2 style="margin-bottom: 20px; color: #1f2937; font-weight: 600;">⚙️ 技术方案</h2>
+                
+                <el-alert type="success" :closable="false" style="margin-bottom: 20px;">
+                    <template #title>
+                        <strong>方案概览：</strong>{{ solutionResult.solution_overview.solution_type }} | 
+                        预算：{{ solutionResult.solution_overview.total_budget_estimate }} | 
+                        工期：{{ solutionResult.solution_overview.implementation_duration }}
+                    </template>
+                </el-alert>
+                
+                <el-tabs v-model="solutionTab">
+                    <el-tab-pane label="📋 匹配方案" name="solutions">
+                        <el-row :gutter="20">
+                            <el-col :span="8" v-for="solution in solutionResult.technical_solutions" :key="solution.solution_name">
+                                <el-card shadow="hover">
+                                    <template #header>
+                                        <strong>{{ solution.solution_name }}</strong>
+                                        <el-tag size="small" style="float: right;">
+                                            匹配度: {{ solution.match_score }}
+                                        </el-tag>
+                                    </template>
+                                    <div>
+                                        <p><strong>优势：</strong></p>
+                                        <ul>
+                                            <li v-for="adv in solution.advantages" :key="adv">{{ adv }}</li>
+                                        </ul>
+                                    </div>
+                                </el-card>
+                            </el-col>
+                        </el-row>
+                    </el-tab-pane>
+                    
+                    <el-tab-pane label="🏗️ 系统架构" name="architecture">
+                        <el-timeline>
+                            <el-timeline-item 
+                                v-for="layer in solutionResult.system_architecture.layers" 
+                                :key="layer.name"
+                                :timestamp="layer.name">
+                                <el-card>
+                                    <p><strong>组件：</strong>{{ layer.components.join('、') }}</p>
+                                    <p><strong>技术：</strong>{{ layer.technologies.join('、') }}</p>
+                                </el-card>
+                            </el-timeline-item>
+                        </el-timeline>
+                    </el-tab-pane>
+                </el-tabs>
+                
+                <div style="margin-top: 30px; text-align: center;">
+                    <button class="action-button" :disabled="searchingSuppliers" @click="findSuppliers">
+                        <span v-if="searchingSuppliers">⏳</span>
+                        <span v-else>🔍</span>
+                        {{ searchingSuppliers ? '搜索中...' : '查找供应商' }}
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 供应商结果 -->
+            <div v-if="supplierResult" class="result-card fade-in-up">
+                <h2 style="margin-bottom: 20px; color: #1f2937; font-weight: 600;">🏢 供应商推荐</h2>
+                
+                <el-alert type="info" :closable="false" style="margin-bottom: 20px;">
+                    <template #title>
+                        共找到 {{ supplierResult.total_found }} 家供应商，为您推荐前 3 家
+                    </template>
+                </el-alert>
+                
+                <div v-for="(supplier, index) in supplierResult.top_suppliers" :key="supplier.name" 
+                     style="margin-bottom: 20px; padding: 20px; border: 1px solid #e5e7eb; border-radius: 12px;">
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <div style="width: 30px; height: 30px; background: linear-gradient(135deg, #667eea, #764ba2); 
+                                    color: white; border-radius: 50%; display: flex; align-items: center; 
+                                    justify-content: center; font-weight: bold; margin-right: 15px;">
+                            {{ index + 1 }}
+                        </div>
+                        <h3 style="margin: 0;">{{ supplier.name }}</h3>
+                        <el-tag style="margin-left: 15px;" type="success">
+                            信用等级: {{ supplier.credit_rating }}
+                        </el-tag>
+                        <el-tag style="margin-left: 10px;">
+                            综合评分: {{ supplier.total_score }}
+                        </el-tag>
+                    </div>
+                    
+                    <el-descriptions :column="2" border size="small">
+                        <el-descriptions-item label="公司简介" :span="2">
+                            {{ supplier.description }}
+                        </el-descriptions-item>
+                        <el-descriptions-item label="官网地址">
+                            <el-link :href="supplier.website" target="_blank" type="primary">
+                                {{ supplier.website }}
+                            </el-link>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="联系人">
+                            {{ supplier.contact_info.contact_person }}
+                        </el-descriptions-item>
+                        <el-descriptions-item label="联系电话">
+                            {{ supplier.contact_info.phone }}
+                        </el-descriptions-item>
+                        <el-descriptions-item label="邮箱">
+                            {{ supplier.contact_info.email }}
+                        </el-descriptions-item>
+                    </el-descriptions>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 分析按钮 -->
+        <div v-if="uploadedFile && !analysisResult" style="text-align: center; margin-top: 30px;">
+            <button class="action-button" :disabled="analyzing" @click="analyzeBid">
+                <span v-if="analyzing">⏳</span>
+                <span v-else>📖</span>
+                {{ analyzing ? '解读中...' : '开始解读标书' }}
+            </button>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>

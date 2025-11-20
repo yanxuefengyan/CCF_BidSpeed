@@ -1,0 +1,25 @@
+{
+  "app_name": "标书速读 - BidSpeed",
+  "version": "1.0.0",
+  "debug": true,
+  "api_key": "",
+  "database": {
+    "type": "sqlite",
+    "path": "data/bidspeed.db"
+  },
+  "upload": {
+    "max_file_size": "16MB",
+    "allowed_extensions": ["pdf", "docx", "doc"],
+    "storage_path": "uploads/"
+  },
+  "ai_service": {
+    "provider": "wenxin",
+    "api_endpoint": "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions_pro",
+    "timeout": 30
+  },
+  "search": {
+    "engines": ["baidu", "bing"],
+    "timeout": 10,
+    "max_results": 10
+  }
+}
